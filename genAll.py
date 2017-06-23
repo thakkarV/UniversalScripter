@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import argparse
-import subprocess
+import string as st
 
 def main(args):
 
@@ -11,35 +11,49 @@ def main(args):
 
 	# Parsing current Mod and Variant of vanilla code based on current directory.
 	re_mod = re.search('Mod([0-9])', CURRENT_DIR)
-	
+	mod = re_mod.group(0)
+
 	re_var = re.search('Var([0-9])', CURRENT_DIR)
+	var = re_var.group(0)
 
 	# Create script
-	scr = 'open("' + re_mod.group(0) + re_var.group(0) + 'Train.sh", "w+")'
+	scr = 'open("' + mod + var + 'Gen.sh", "w+")'
 	bash = eval(scr)
 
-	# Create script
-	'''#!/bin/bash -l
-	#$ -P textconv
-	#$ -l h_rt=168:00:00
-	#$ -m beas
-	#$ -N job_name
-	#$ -pe omp 4
-	#$ -l mem_per_core=32
-	#$ -l gpus=0.25
-	#$ -l gpu_c=3.5
+	# Write shell script
 
-	module load cuda/8.0
-	module load cudnn/5.1
-	module load python/3.5.1
-	module load tensorflow/r1.1_python-3.5.1
+	# Flags
+	bash.write("#!/bin/bash -l\n")
+	bash.write("#$ -l h_rt=" + str(args.max_time_hours) + ":00:00\n")
+	bash.write("#$ -m beas \n")
+	bash.write("#$ -N " + str(args.job_name) + "\n")
+	bash.write("#$ -pe omp " + str(args.cores) + "\n")
+	bash.write("#$ -l mem_per_core=" + str(args.mem_total) + "\n")
+	bash.write("#$ -l gpus=" + str(args.num_gpus) + "\n")
+	bash.write("#$ -l gpu_c=" + str(args.gpu_c) + "\n")
 
-	# avoiding changing directories by writing out the full paths to everything in the command line
-	python /projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/train.py \
-			--data_dir=args.data_dir \
-			--logdir=? \
-			--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/mod1var1.json \
-			--silence_threshold=0'''
+	bash.write("\n\n")
+
+	# Load necessary modules
+	bash.write("module load cuda/8.0\n")
+	bash.write("module load cudnn/5.1\n")
+	bash.write("module load python/3.5.1\n")
+	bash.write("module load tensorflow/r1.1_python-3.5.1\n")
+
+	bash.write("\n")
+
+	# Generation command
+	bash.write("python /projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/generate.py \ \n")
+	bash.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + " \ \n")
+	bash.write("\t\t--samples=" + str(args.samples) + "\n")
+	
+	check = "model.ckpt-{}".format(args.ckpt)
+	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/" + mod.lower() + var.lower() + ".json \ \n")
+	bash.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/Logs/" + check + " \ \n")
+
+	bash.write("\n")
+
+	bash.close()
 
 
 if __name__ == '__main__':
@@ -69,7 +83,7 @@ if __name__ == '__main__':
 						help = "Total number of CPU cores to request for training. Default is 4 cores.",
 						type = int,
 						nargs = 1,
-						dest = 'num_cpus',
+						dest = 'cores',
 						default = 4,
 						required = False)
 
@@ -77,7 +91,7 @@ if __name__ == '__main__':
 						help = "Total amount of RAM to request for training. Default is 128G.",
 						type = int,
 						nargs = 1,
-						dest = 'num_memtotal',
+						dest = 'mem_total',
 						default = 32,
 						required = False)
 
@@ -87,14 +101,6 @@ if __name__ == '__main__':
 						nargs = 1,
 						dest = 'max_time_hours',
 						default = 168,
-						required = False)
-
-	parser.add_argument('-d', '-data',
-						help = "Full path to dataset directory. Default is NCS House.",
-						type = str,
-						nargs = 1,
-						dest = 'data_dir',
-						default = '/projectnb/textconv/WaveNet/Datasets/NCS/House',
 						required = False)
 
 	parser.add_argument('-n', '--name',
@@ -108,10 +114,17 @@ if __name__ == '__main__':
 	parser.add_argument('-ck', '--ckpt',
 						help = "Number of the checkpoint file to generate from.",
 						type = int,
-						nargs = 1,
 						dest = 'ckpt',
 						default = None,
 						required = True)
+
+	parser.add_argument('-s', '--samples',
+						help = "Number of audio samples to generate. 16000 samples corresponds to 1 second of raw audio.",
+						type = int,
+						nargs = 1,
+						dest = 'samples',
+						default = 16000,
+						required = False)
 
 	args = parser.parse_args()
 
