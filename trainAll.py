@@ -9,25 +9,25 @@ def main(args):
 	re_mod = re.search('/Mod([0-9]+)/', CURRENT_DIR)
 	print(re_mod)
 
-	print(CURRENT_DIR)	
+	print(CURRENT_DIR)
 
 
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(prog = "UniversalTrainer",
-	                                description = "Automatic sheel scrip generator for training and generating from WaveNet.")
+	                                description = "Automatic shell script generator for training and generating from WaveNet.")
 
 
 	parser.add_argument('-gp', '--gpus',
-						help = "Total number of GPUs to request for trainig. default is none.",
+						help = "Total number of GPUs to request for training. Default is one.",
 						type = int,
 						nargs = 1,
 						dest = 'num_gpus',
-						default = 0,
+						default = 0.25,
 						required = False)
 
 	parser.add_argument('-gc', '--gpu-c',
-						help = "GPU compute capability. 6.0 for a Tesla P100. Defaults to 3.5 for a Tesla K40.",
+						help = "GPU compute capability. 6.0 for a Tesla P100. Defaults to 3.5 for a Tesla K40m.",
 						type = float,
 						nargs = 1,
 						dest = 'gpu_c',
@@ -35,15 +35,15 @@ if __name__ == '__main__':
 						required = False)
 
 	parser.add_argument('-c', '--cores',
-						help = "Total number of CPU cores to request for trainig. Default is 1 core.",
+						help = "Total number of CPU cores to request for training. Default is 4 cores.",
 						type = int,
 						nargs = 1,
 						dest = 'num_cpus',
-						default = 1,
+						default = 4,
 						required = False)
 
 	parser.add_argument('-mt', '--mem-total',
-						help = "Total number of RAM to request for trainig. Default is 16 G.",
+						help = "Total amount of RAM to request for training. Default is 32G.",
 						type = int,
 						nargs = 1,
 						dest = 'num_memtotal',
@@ -51,11 +51,11 @@ if __name__ == '__main__':
 						required = False)
 
 	parser.add_argument('-t', '--time',
-						help = "Maximum number of hours to train for.",
+						help = "Maximum number of hours to train for. Default is 1 week.",
 						type = int,
 						nargs = 1,
 						dest = 'max_time_hours',
-						default = 48,
+						default = 168,
 						required = False)
 
 	parser.add_argument('-n', '--name',
