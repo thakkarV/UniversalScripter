@@ -94,6 +94,9 @@ def main(args):
 
 	file.close()
 
+	if args.e:
+		os.system("qsub {}".format(fileName))
+
 
 if __name__ == '__main__':
 
@@ -163,6 +166,11 @@ if __name__ == '__main__':
 						type = float,
 						dest = 'silence_threshold',
 						default = 0,
+						required = False)
+
+	parser.add_argument('-e', '--execute',
+						help = "QSUB the generated automatically file if this flag is passed.",
+						action = 'store_true',
 						required = False)
 
 	args = parser.parse_args()
