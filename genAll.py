@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import argparse
-import string as st
+import subprocess
 
 def main(args):
 
@@ -11,24 +11,23 @@ def main(args):
 
 	# Parsing current Mod and Variant of vanilla code based on current directory.
 	re_mod = re.search('Mod([0-9])', CURRENT_DIR)
-
+	
 	re_var = re.search('Var([0-9])', CURRENT_DIR)
 
 	# Create script
 	scr = 'open("' + re_mod.group(0) + re_var.group(0) + 'Train.sh", "w+")'
 	bash = eval(scr)
 
-	# Write inside the script
-	# bash.write()
+	# Create script
 	'''#!/bin/bash -l
 	#$ -P textconv
 	#$ -l h_rt=168:00:00
 	#$ -m beas
-	#$ -N args.job_name
-	#$ -pe omp args.cores
-	#$ -l mem_total=args.mem_total
-	#$ -l gpus=args.num_gpus
-	#$ -l gpu_c=args.gpu_c
+	#$ -N job_name
+	#$ -pe omp 4
+	#$ -l mem_per_core=32
+	#$ -l gpus=0.25
+	#$ -l gpu_c=3.5
 
 	module load cuda/8.0
 	module load cudnn/5.1
@@ -39,15 +38,13 @@ def main(args):
 	python /projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/train.py \
 			--data_dir=args.data_dir \
 			--logdir=? \
-			--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/st.lower(re_mod).st.lower(re_var).json \
+			--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/mod1var1.json \
 			--silence_threshold=0'''
-
-	bash.close()
 
 
 if __name__ == '__main__':
 
-	# Create arguments on command line. Name of job is required.
+	# Create arguments on command line. Name of job and checkpoint number are required.
 	parser = argparse.ArgumentParser(prog = "UniversalTrainer",
 	                                description = "Automatic shell script generator for training and generating from WaveNet.")
 
@@ -72,7 +69,7 @@ if __name__ == '__main__':
 						help = "Total number of CPU cores to request for training. Default is 4 cores.",
 						type = int,
 						nargs = 1,
-						dest = 'cores',
+						dest = 'num_cpus',
 						default = 4,
 						required = False)
 
@@ -80,7 +77,7 @@ if __name__ == '__main__':
 						help = "Total amount of RAM to request for training. Default is 128G.",
 						type = int,
 						nargs = 1,
-						dest = 'memtotal',
+						dest = 'num_memtotal',
 						default = 32,
 						required = False)
 
@@ -105,6 +102,14 @@ if __name__ == '__main__':
 						type = str,
 						nargs = 1,
 						dest = 'job_name',
+						default = None,
+						required = True)
+
+	parser.add_argument('-ck', '--ckpt',
+						help = "Number of the checkpoint file to generate from.",
+						type = int,
+						nargs = 1,
+						dest = 'ckpt',
 						default = None,
 						required = True)
 
