@@ -45,7 +45,7 @@ def main(args):
 	# Generation command
 	bash.write("python /projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/generate.py \ \n")
 	bash.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + " \ \n")
-	bash.write("\t\t--samples=" + str(args.samples) + "\n")
+	bash.write("\t\t--samples=" + str(args.samples) + "\ \n")
 	
 	check = "model.ckpt-{}".format(args.ckpt)
 	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/" + mod.lower() + var.lower() + ".json \ \n")
