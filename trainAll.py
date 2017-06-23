@@ -105,7 +105,6 @@ if __name__ == '__main__':
 	parser.add_argument('-gp', '--gpus',
 						help = "Total number of GPUs to request for training. Default is one.",
 						type = int,
-						nargs = 1,
 						dest = 'num_gpus',
 						default = 0.25,
 						required = False)
@@ -113,7 +112,6 @@ if __name__ == '__main__':
 	parser.add_argument('-gc', '--gpu-c',
 						help = "GPU compute capability. 6.0 for a Tesla P100. Defaults to 3.5 for a Tesla K40m.",
 						type = float,
-						nargs = 1,
 						dest = 'gpu_c',
 						default = 3.5,
 						required = False)
@@ -121,7 +119,6 @@ if __name__ == '__main__':
 	parser.add_argument('-c', '--cores',
 						help = "Total number of CPU cores to request for training. Default is 4 cores.",
 						type = int,
-						nargs = 1,
 						dest = 'num_cores',
 						default = 4,
 						required = False)
@@ -129,7 +126,6 @@ if __name__ == '__main__':
 	parser.add_argument('-mt', '--mem-total',
 						help = "Total amount of RAM to request for training. Default is 128G.",
 						type = int,
-						nargs = 1,
 						dest = 'memtotal',
 						default = 32,
 						required = False)
@@ -137,7 +133,6 @@ if __name__ == '__main__':
 	parser.add_argument('-t', '--time',
 						help = "Maximum number of hours to train for. Default is 1 week.",
 						type = int,
-						nargs = 1,
 						dest = 'max_time_hours',
 						default = 168,
 						required = False)
@@ -145,7 +140,6 @@ if __name__ == '__main__':
 	parser.add_argument('-d', '-data',
 						help = "Full path to dataset directory. Default is NCS House.",
 						type = str,
-						nargs = 1,
 						dest = 'data_dir',
 						default = '/projectnb/textconv/WaveNet/Datasets/NCS/House',
 						required = False)
@@ -153,7 +147,6 @@ if __name__ == '__main__':
 	parser.add_argument('-n', '--name',
 						help = "Name of training job. Default is ModxVaryTrain",
 						type = str,
-						nargs = 1,
 						dest = 'job_name',
 						default = None,
 						required = False)
@@ -161,18 +154,16 @@ if __name__ == '__main__':
 	parser.add_argument('-p', '--project-name',
 						help = "Name of SCC project.",
 						type = str,
-						nargs = 1,
 						dest = 'proj_name',
 						default = 'textconv',
 						required = False)
 
 	parser.add_argument('-s', '--silence-threshold',
-					help = "A value between 0 and 1 of the silence threshold. Defaults to 0.",
-					type = float,
-					nargs = 1,
-					dest = 'silence_threshold',
-					default = 0,
-					required = False)
+						help = "A value between 0 and 1 of the silence threshold. Defaults to 0.",
+						type = float,
+						dest = 'silence_threshold',
+						default = 0,
+						required = False)
 
 	args = parser.parse_args()
 
