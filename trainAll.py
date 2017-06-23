@@ -61,7 +61,7 @@ def main(args):
 
 	# TOTAL MEMORY
 	file.write("# TOTAM MEMORY" + newline)
-	mem_string = "#$ -l mem_total={}".format(args.mem_total)
+	mem_string = "#$ -l mem_total={}G".format(args.mem_total)
 	file.write(mem_string + newline + newline)
 
 	# TOTAL GPUS
