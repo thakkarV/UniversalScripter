@@ -10,13 +10,20 @@ def main(args):
 	CURRENT_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 	# Parsing current Mod and Variant of vanilla code based on current directory.
-	re_mod = re.search('Mod([0-9])', CURRENT_DIR)
+	re_mod = re.search('Mod([0-9]+)', CURRENT_DIR)
+	mod_str = re_mod.group(0)
 
-	re_var = re.search('Var([0-9])', CURRENT_DIR)
+	# Get Variant directory name
+	re_var = re.search('Var([0-9]+)', CURRENT_DIR)
+	if re_var is None:
+		var_str = re.search('Mod([0-9]+)/([a-zA-Z0-9]+/?)', CURRENT_DIR).group(2)
+	else:
+		var_str = re_var.group(0)
+
 
 	# Create script
-	file_name = re_mod.group(0) + re_var.group(0) + 'Train.sh'
-	params_file_name = re_mod.group(0) + re_var.group(0) + ".json"
+	file_name = mod_str + var_str + 'Train.sh'
+	params_file_name = mod_str + var_str + ".json"
 	params_file_name = params_file_name.lower()
 
 	file = open(file_name, 'w+')
@@ -44,7 +51,7 @@ def main(args):
 
 	# JOB NAME
 	file.write("# JOB NAME" + newline)
-	name_string = "#$ -N {}".format(re_mod.group(0) + re_var.group(0) + 'Train' if args.job_name is None else args.job_name)
+	name_string = "#$ -N {}".format(mod_str + var_str + 'Train' if args.job_name is None else args.job_name)
 	file.write(name_string + newline + newline)
 
 	# TOTAL CPU CORES
@@ -83,11 +90,11 @@ def main(args):
 	data_path = "--data_dir={} \\".format(args.data_dir)
 	file.write(data_path + newline)
 
-	log_path = "--logdir=/projectnb/{}/WaveNet/Models/{}/{}/Logs \\".format(args.proj_name, re_mod.group(0), re_var.group(0))
+	log_path = "--logdir=/projectnb/{}/WaveNet/Models/{}/{}/Logs \\".format(args.proj_name, mod_str, var_str)
 	file.write(log_path + newline)
 
 	params_path = "--wavenet_params=/projectnb/{}/WaveNet/Models/{}/{}/{} \\" \
-					.format(args.proj_name, re_mod.group(0), re_var.group(0), params_file_name)
+					.format(args.proj_name, mod_str, var_str, params_file_name)
 	file.write(params_path + newline)
 
 	silence_string = "--silence_threshold={}".format(args.silence_threshold)
