@@ -87,7 +87,7 @@ def main(args):
 	code_path = "python /projectnb/{}/WaveNet/Code/tensorflow-wavenet/train.py \\".format(args.proj_name)
 	file.write(code_path + newline)
 	
-	data_path = "--data_dir={} \\".format(args.data_dir)
+	data_path = "--data_dir=/projectnb/{}/WaveNet/Datasets{} \\".format(args.proj_name, args.data_dir)
 	file.write(data_path + newline)
 
 	log_path = "--logdir=/projectnb/{}/WaveNet/Models/{}/{}/Logs \\".format(args.proj_name, mod_str, var_str)
@@ -150,10 +150,10 @@ if __name__ == '__main__':
 						required = False)
 
 	parser.add_argument('-d', '-data',
-						help = "Full path to dataset directory. Default is NCS House.",
+						help = "Partial path to dataset directory starting at WaveNet/DataSets/. Default is /NCS/House",
 						type = str,
 						dest = 'data_dir',
-						default = '/projectnb/textconv/WaveNet/Datasets/NCS/House',
+						default = '/NCS/House',
 						required = False)
 
 	parser.add_argument('-n', '--name',
