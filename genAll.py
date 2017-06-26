@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import glob	
 import argparse
 import string as st
 
@@ -8,52 +9,60 @@ def main(args):
 
 	# Finding current directory.
 	CURRENT_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
+	print(CURRENT_DIR)
 
 	# Parsing current Mod and Variant of vanilla code based on current directory.
 	re_mod = re.search('Mod([0-9])', CURRENT_DIR)
-	mod = re_mod.group(0)
+	mod_str = re_mod.group(0)
 
 	re_var = re.search('Var([0-9])', CURRENT_DIR)
-	var = re_var.group(0)
+	var_str = re_var.group(0)
+
+	# now we get the generation file name
+	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
+	latset_wav = max(list_of_wavs, key = os.path.getctime)
+	print(latset_wav)
+
 
 	# Create script
-	scr = 'open("' + mod + var + 'Gen.sh", "w+")'
-	bash = eval(scr)
+	file = mod_str + var_str + 'Gen.sh'
+	open(file, 'w+')
 
 	# Write shell script
+	newline = '\n'
 
 	# Flags
-	bash.write("#!/bin/bash -l\n")
-	bash.write("#$ -l h_rt=" + str(args.max_time_hours) + ":00:00\n")
-	bash.write("#$ -m beas \n")
-	bash.write("#$ -N " + args.job_name + "\n")
-	bash.write("#$ -pe omp " + str(args.cores) + "\n")
-	bash.write("#$ -l mem_per_core=" + str(args.mem_total) + "\n")
-	bash.write("#$ -l gpus=" + str(args.num_gpus) + "\n")
-	bash.write("#$ -l gpu_c=" + str(args.gpu_c) + "\n")
+	file.write("#!/bin/bash -l" + newline)
+	file.write("#$ -l h_rt=" + str(args.max_time_hours) + ":00:00" + newline)
+	file.write("#$ -m beas ")
+	file.write("#$ -N " + mod_str + var_str + gen_str + newline)
+	file.write("#$ -pe omp " + str(args.num_cpus) + newline)
+	file.write("#$ -l mem_per_core=" + str(args.mem_total) + newline)
+	file.write("#$ -l gpus=" + str(args.num_gpus / args.cores) + newline)
+	file.write("#$ -l gpu_c=" + str(args.gpu_c) + newline)
 
-	bash.write("\n\n")
+	file.write(newline + newline)
 
 	# Load necessary modules
-	bash.write("module load cuda/8.0\n")
-	bash.write("module load cudnn/5.1\n")
-	bash.write("module load python/3.5.1\n")
-	bash.write("module load tensorflow/r1.1_python-3.5.1\n")
+	file.write("module load cuda/8.0" + newline)
+	file.write("module load cudnn/5.1" + newline)
+	file.write("module load python/3.5.1" + newline)
+	file.write("module load tensorflow/r1.1_python-3.5.1" + newline)
 
-	bash.write("\n")
+	file.write(newline)
 
 	# Generation command
-	bash.write("python /projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/generate.py \ \n")
-	bash.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + " \ \n")
-	bash.write("\t\t--samples=" + str(args.samples) + "\ \n")
+	file.write("python /projectnb/textconv/WaveNet/Code/tensorflow-wavenet/generate.py \ " + newline)
+	file.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod_str + "/" + var_str + " \ " + newline)
+	file.write("\t\t--samples=" + str(args.samples) + "\ " + newline)
 	
-	check = "model.ckpt-{}".format(args.ckpt)
-	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/" + mod.lower() + var.lower() + ".json \ \n")
-	bash.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/Logs/" + check + " \ \n")
+	checkpoint = "model.ckpt-{}".format(args.ckpt)
+	file.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/" + mod_str.lower() + var_str.lower() + ".json \ " + newline)
+	file.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod_str + "/" + var_str + "/Logs/" + checkpoint + " \ " + newline)
 
-	bash.write("\n")
+	file.write(newline)
 
-	bash.close()
+	file.close()
 
 
 if __name__ == '__main__':
@@ -67,7 +76,7 @@ if __name__ == '__main__':
 						help = "Total number of GPUs to request for training. Default is one.",
 						type = int,
 						dest = 'num_gpus',
-						default = 0.25,
+						default = 1,
 						required = False)
 
 	parser.add_argument('-gc', '--gpu-c',
@@ -80,7 +89,7 @@ if __name__ == '__main__':
 	parser.add_argument('-c', '--cores',
 						help = "Total number of CPU cores to request for training. Default is 4 cores.",
 						type = int,
-						dest = 'cores',
+						dest = 'num_cpus',
 						default = 4,
 						required = False)
 
@@ -103,7 +112,7 @@ if __name__ == '__main__':
 						type = str,
 						dest = 'job_name',
 						default = None,
-						required = True)
+						required = False)
 
 	parser.add_argument('-ck', '--ckpt',
 						help = "Number of the checkpoint file to generate from.",
