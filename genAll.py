@@ -18,10 +18,12 @@ def main(args):
 	re_var = re.search('Var([0-9])', CURRENT_DIR)
 	var_str = re_var.group(0)
 
-	# now we get the generation file name
+	# now we get the generation file name so that we can autoname the wav file with the generation number
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
 	latset_wav = max(list_of_wavs, key = os.path.getctime)
-	print(latset_wav)
+	print(latset_wav) # DEBUG
+	gen_str = re.search('mod([0-9]+)var([0-9]+)gen([0-9]+)', latset_wav).group(3)
+
 
 
 	# Create script
@@ -53,11 +55,11 @@ def main(args):
 
 	# Generation command
 	file.write("python /projectnb/textconv/WaveNet/Code/tensorflow-wavenet/generate.py \ " + newline)
-	file.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod_str + "/" + var_str + " \ " + newline)
+	file.write("\t\t--logdir=/projectnb/textconv/WaveNet/Models/" + mod_str + "/" + var_str + gen_str + " \ " + newline)
 	file.write("\t\t--samples=" + str(args.samples) + "\ " + newline)
 	
 	checkpoint = "model.ckpt-{}".format(args.ckpt)
-	file.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Vijay/tensorflow-wavenet/ParamMods/" + mod_str.lower() + var_str.lower() + ".json \ " + newline)
+	file.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Models/" + mod_str + var_str + ".json \ " + newline)
 	file.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod_str + "/" + var_str + "/Logs/" + checkpoint + " \ " + newline)
 
 	file.write(newline)
