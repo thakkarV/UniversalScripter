@@ -81,7 +81,7 @@ def main(args):
 	
 	check = "model.ckpt-" + str(args.ckpt)
 	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/" + mod.lower() + var.lower() + ".json \ \n")
-	bash.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/Logs/" + check + " \\\n")
+	bash.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/Logs/" + check + "\n")
 
 	bash.write("\n")
 
