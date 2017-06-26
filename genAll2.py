@@ -17,8 +17,10 @@ def main(args):
 	var = re_var.group(0)
 
 	# CREATE SCRIPT FILE
-	scr = 'open("' + mod + var + 'Gen.sh", "w+")'
-	bash = eval(scr)
+	scr = mod + var + "Gen.sh"
+	bash = open(scr, 'w+')
+	# scr = 'open("' + mod + var + 'Gen.sh", "w+")'
+	# bash = eval(scr)
 
 	# WRITE SHELL SCRIPT
 	# Bash shell declaration
