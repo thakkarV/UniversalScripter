@@ -14,13 +14,14 @@ def main(args):
 	mod = re_mod.group(0)
 
 	re_var = re.search('Var([0-9])', CURRENT_DIR)
-	var = re_var.group(0)
+	if re_var is None:
+		var = re.search('Mod([0-9]+)/([a-zA-Z0-9]+/?)', CURRENT_DIR).group(2)
+	else:
+		var = re_var.group(0)
 
 	# CREATE SCRIPT FILE
 	scr = mod + var + "Gen.sh"
 	bash = open(scr, 'w+')
-	# scr = 'open("' + mod + var + 'Gen.sh", "w+")'
-	# bash = eval(scr)
 
 	# WRITE SHELL SCRIPT
 	# Bash shell declaration
@@ -62,7 +63,7 @@ def main(args):
 	bash.write("# GPU capability\n")
 	bash.write("#$ -l gpu_c=" + str(args.gpu_c) + "\n")
 
-	bash.write("\n\n")
+	bash.write("\n")
 
 	# Load necessary modules in the SCC
 	bash.write("# Load necessary modules\n")
@@ -80,7 +81,7 @@ def main(args):
 	bash.write("\t\t--samples=" + str(args.samples) + " \\\n")
 	
 	check = "model.ckpt-" + str(args.ckpt)
-	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/" + mod.lower() + var.lower() + ".json \ \n")
+	bash.write("\t\t--wavenet_params=/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/" + mod.lower() + var.lower() + ".json \\\n")
 	bash.write("\t\t/projectnb/textconv/WaveNet/Models/" + mod + "/" + var + "/Logs/" + check + "\n")
 
 	bash.write("\n")
