@@ -24,44 +24,49 @@ def main(args):
 		var_str = re_var.group(0)
 		var_num = re_var.group(1)
 
-	if __debug__:
-		print("Var string = " + var_str)
-		print("Var number = " + var_num)
+
 
 	# ALL WAV FILES IN CWD AND FROM THOSE, THE LATEST
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
-	latset_wav = max(list_of_wavs, key = os.path.getctime)
+	latest_wav = max(list_of_wavs, key = os.path.getctime)
 	
-	if __debug__:
-		print("Latest wav = " + latset_wav) # DEBUG
-
 	# FROM THAT, CURRENT LATEST WAV FILE
 	if var_num is not None:
 		gen_match_str = 'M([0-9]+)V([0-9]+)G([0-9]+)'
-		gen_str = re.search(gen_match_str, latset_wav).group(3)
+		gen_str = re.search(gen_match_str, latest_wav).group(3)
 	else:
 		gen_match_str = "M([0-9]+){}G([0-9]+)".format(var_str)
-		gen_str = re.search(gen_match_str, latset_wav).group(2)
-
-	if __debug__:
-		print("Gen str = " + gen_str)
+		gen_str = re.search(gen_match_str, latest_wav).group(2)
 	
 	# NUMBER OF NEXT GENERATION FILE
-	if latset_wav is not None:
+	if latest_wav is not None:
 		gen_num = int(gen_str) + 1 if args.gen_num is None else args.gen_num
 	else:
 		gen_num = 0 if args.gen_num is None else args.gen_num
 
-	if __debug__:
-		print("gen num = " + str(gen_num))
-
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
 	gen_file_name = "M{}V{}G{}".format(mod_num, var_num if var_num is not None else var_str, gen_num)
+
+
+
+	# NOW FIND OUT THE LATEST CHECKPOINT NUMBER
+	os.chdir(os.path.join(CURRENT_DIR, 'Logs'))
+	list_of_ckpt = glob.glob('*.ckpt-*')
+	latest_ckpt_file = max(list_of_ckpt, key = os.path.getctime)
+	os.chdir(CURRENT_DIR)
+	latest_ckpt_number = re.search('ckpt-([0-9]+)', latest_ckpt_file).group(1)
+
+	# DECIDE WICH ONE TO USE AND SET CKPT NUMBER
+	ckpt = args.ckpt if args.ckpt is not None else latest_ckpt_number
+
+
 
 	# NAME OTHER REQUIRED FILE ACCODINGLY
 	file_name = mod_str + var_str + 'Gen.sh'
 	params_file_name = mod_str + var_str + ".json"
 	params_file_name = params_file_name.lower()
+
+
 
 	# OPEN FILE FOR WRITING
 	file = open(file_name, 'w+')
@@ -147,7 +152,7 @@ def main(args):
 
 	# checkpoint command
 	ckpt_str = "\t\t/projectnb/textconv/WaveNet/Models/{}/{}/Logs/model.ckpt-{} \n\n" \
-				.format(mod_str, var_str, args.ckpt)
+				.format(mod_str, var_str, ckpt)
 	file.write(ckpt_str)
 
 
@@ -216,11 +221,11 @@ if __name__ == '__main__':
 						required = False)
 
 	parser.add_argument('-ck', '--ckpt',
-						help = "Number of the checkpoint file to generate from.",
+						help = "Number of the checkpoint file to generate from. Uses the latest automatically",
 						type = int,
 						dest = 'ckpt',
 						default = None,
-						required = True)
+						required = False)
 
 	parser.add_argument('-s', '--samples',
 						help = "Number of audio samples to generate. 16000 samples corresponds to 1 second of raw audio. Default is 16000.",
