@@ -45,6 +45,9 @@ def main(args):
 
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
 	if var_num is not None:
+		print(mod_num)
+		print(var_num)
+		print(gen_num)
 		gen_file_name = "M{}V{}G{}".format(mod_num, var_num, gen_num)
 	else:
 		gen_file_name = "M{}{}G{}".format(mod_num, var_str, gen_num)

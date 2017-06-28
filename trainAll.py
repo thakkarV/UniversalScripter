@@ -149,12 +149,12 @@ if __name__ == '__main__':
 						default = 168,
 						required = False)
 
-	parser.add_argument('-d', '-data',
+	parser.add_argument('-d', '--data',
 						help = "Partial path to dataset directory starting at WaveNet/DataSets/. Default is /NCS/House",
 						type = str,
 						dest = 'data_dir',
-						default = '/NCS/House',
-						required = False)
+						default = None,
+						required = True)
 
 	parser.add_argument('-n', '--name',
 						help = "Name of training job. Default is ModxVaryTrain",
