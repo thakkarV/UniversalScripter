@@ -25,7 +25,6 @@ def main(args):
 		var_num = re_var.group(1)
 
 
-
 	# ALL WAV FILES IN CWD AND FROM THOSE, THE LATEST
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
 	latest_wav = max(list_of_wavs, key = os.path.getctime)
@@ -39,10 +38,10 @@ def main(args):
 		gen_str = re.search(gen_match_str, latest_wav).group(2)
 	
 	# NUMBER OF NEXT GENERATION FILE
-	if latest_wav is not None:
+	if gen_str is not None:
 		gen_num = int(gen_str) + 1 if args.gen_num is None else args.gen_num
 	else:
-		gen_num = 0 if args.gen_num is None else args.gen_num
+		gen_num = 1 if args.gen_num is None else args.gen_num
 
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
 	gen_file_name = "M{}V{}G{}".format(mod_num, var_num if var_num is not None else var_str, gen_num)
@@ -95,7 +94,7 @@ def main(args):
 
 	# Set job name in the SCC
 	file.write("# Job name\n")
-	name_str = "#$ -N{}\n\n".format(mod_str + var_str + 'Gen' + str(gen_num) if args.job_name is None else args._job_name)
+	name_str = "#$ -N {}\n\n".format(mod_str + var_str + 'Gen' + str(gen_num) if args.job_name is None else args._job_name)
 	file.write(name_str)
 
 	# Number of CPU cores to request from the SCC
