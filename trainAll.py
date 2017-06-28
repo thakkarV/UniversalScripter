@@ -100,7 +100,7 @@ def main(args):
 	silence_string = "--silence_threshold={} \\".format(args.silence_threshold)
 	file.write(silence_string + newline)
 
-	learning_rate_str = "--learning-rate={}".format(args.learning_rate)
+	learning_rate_str = "--learning_rate={}".format(args.learning_rate)
 	file.write(learning_rate_str + newline)
 
 	file.close()
