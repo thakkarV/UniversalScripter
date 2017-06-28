@@ -97,8 +97,11 @@ def main(args):
 					.format(args.proj_name, mod_str, var_str, params_file_name)
 	file.write(params_path + newline)
 
-	silence_string = "--silence_threshold={}".format(args.silence_threshold)
+	silence_string = "--silence_threshold={} \\".format(args.silence_threshold)
 	file.write(silence_string + newline)
+
+	learning_rate_str = "--learning-rate={}".format(args.learning_rate)
+	file.write(learning_rate_str + newline)
 
 	file.close()
 
@@ -126,6 +129,13 @@ if __name__ == '__main__':
 						type = float,
 						dest = 'gpu_c',
 						default = 3.5,
+						required = False)
+
+	parser.add_argument('-l', '--learning-rate',
+						help = "Learning rate of the optimizer.",
+						type = float,
+						dest = 'learning_rate',
+						default = 0.001,
 						required = False)
 
 	parser.add_argument('-c', '--cores',
