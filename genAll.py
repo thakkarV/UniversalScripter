@@ -82,7 +82,7 @@ def main(args):
 
 	# Set project name in the SCC
 	file.write("# Project name\n")
-	name_str = "#$ -P {} \n\n".format(mod_str + var_str + gen_str if args.job_name is None else args.job_name)
+	name_str = "#$ -P {} \n\n".format(args.proj_name)
 	file.write(name_str)
 
 	# Max time to run generation
