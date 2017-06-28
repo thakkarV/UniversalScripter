@@ -34,8 +34,8 @@ def main(args):
 		gen_match_str = 'M([0-9]+)V([0-9]+)G([0-9]+)'
 		gen_str = re.search(gen_match_str, latest_wav).group(3)
 	else:
-		gen_match_str = "M([0-9]+){}G([0-9]+)".format(var_str)
-		gen_str = re.search(gen_match_str, latest_wav).group(2)
+		gen_match_str = "G([0-9]+)".format(var_str)
+		gen_str = re.search(gen_match_str, latest_wav).group(1)
 	
 	# NUMBER OF NEXT GENERATION FILE
 	if gen_str is not None:
@@ -44,8 +44,10 @@ def main(args):
 		gen_num = 1 if args.gen_num is None else args.gen_num
 
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
-	gen_file_name = "M{}V{}G{}".format(mod_num, var_num if var_num is not None else var_str, gen_num)
-
+	if var_num is not None:
+		gen_file_name = "M{}V{}G{}".format(mod_num, var_num, gen_num)
+	else:
+		gen_file_name = "M{}{}G{}".format(mod_num, var_str, gen_num)
 
 
 	# NOW FIND OUT THE LATEST CHECKPOINT NUMBER
