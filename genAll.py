@@ -29,7 +29,7 @@ def main(args):
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
 
 	# check if there are any to start with
-	if list_of_wavs is not None:
+	if list_of_wavs:
 		latest_wav = max(list_of_wavs, key = os.path.getctime)
 		# FROM THAT, CURRENT LATEST WAV FILE
 		if var_num is not None:
