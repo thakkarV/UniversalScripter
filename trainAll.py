@@ -156,7 +156,7 @@ if __name__ == '__main__':
 						help = "Maximum number of hours to train for. Default is 1 week.",
 						type = int,
 						dest = 'max_time_hours',
-						default = 168,
+						default = 48,
 						required = False)
 
 	parser.add_argument('-d', '--data',

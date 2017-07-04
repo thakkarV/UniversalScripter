@@ -27,27 +27,26 @@ def main(args):
 
 	# ALL WAV FILES IN CWD AND FROM THOSE, THE LATEST
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
-	latest_wav = max(list_of_wavs, key = os.path.getctime)
-	
-	# FROM THAT, CURRENT LATEST WAV FILE
-	if var_num is not None:
-		gen_match_str = 'M([0-9]+)V([0-9]+)G([0-9]+)'
-		gen_str = re.search(gen_match_str, latest_wav).group(3)
+
+	# check if there are any to start with
+	if list_of_wavs is not None:
+		latest_wav = max(list_of_wavs, key = os.path.getctime)
+		# FROM THAT, CURRENT LATEST WAV FILE
+		if var_num is not None:
+			gen_match_str = 'M([0-9]+)V([0-9]+)G([0-9]+)'
+			gen_str = re.search(gen_match_str, latest_wav).group(3)
+		else:
+			gen_match_str = "G([0-9]+)".format(var_str)
+			gen_str = re.search(gen_match_str, latest_wav).group(1)
 	else:
-		gen_match_str = "G([0-9]+)".format(var_str)
-		gen_str = re.search(gen_match_str, latest_wav).group(1)
+		gen_str = '0'
+
 	
 	# NUMBER OF NEXT GENERATION FILE
-	if gen_str is not None:
-		gen_num = int(gen_str) + 1 if args.gen_num is None else args.gen_num
-	else:
-		gen_num = 1 if args.gen_num is None else args.gen_num
+	gen_num = int(gen_str) + 1 if args.gen_num is None else args.gen_num
 
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
 	if var_num is not None:
-		print(mod_num)
-		print(var_num)
-		print(gen_num)
 		gen_file_name = "M{}V{}G{}".format(mod_num, var_num, gen_num)
 	else:
 		gen_file_name = "M{}{}G{}".format(mod_num, var_str, gen_num)
@@ -207,7 +206,7 @@ if __name__ == '__main__':
 						help = "Maximum number of hours to train for. Default is 1 week.",
 						type = int,
 						dest = 'max_time_hours',
-						default = 168,
+						default = 48,
 						required = False)
 
 	parser.add_argument('-n', '--name',
