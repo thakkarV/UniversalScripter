@@ -24,7 +24,6 @@ def main(args):
 		var_str = re_var.group(0)
 		var_num = re_var.group(1)
 
-
 	# ALL WAV FILES IN CWD AND FROM THOSE, THE LATEST
 	list_of_wavs = glob.glob(CURRENT_DIR + '/*.wav')
 
@@ -41,9 +40,9 @@ def main(args):
 	else:
 		gen_str = '0'
 
-	
 	# NUMBER OF NEXT GENERATION FILE
 	gen_num = int(gen_str) + 1 if args.gen_num is None else args.gen_num
+
 
 	# NOW MAKE THE NAME OF NEXT GENERATION FILE
 	if var_num is not None:
